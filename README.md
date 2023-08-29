@@ -1,4 +1,4 @@
-# yallalive-usps
+# Yallalive
 
 ## Added 'away' field to shop model
 shops now have both 'open' and 'away' fields/attributes in their api json model.
@@ -6,33 +6,11 @@ shops now have both 'open' and 'away' fields/attributes in their api json model.
 
 ## USPS Integrated routes :
 ### 1. Create domestic shipping labels.
-- Route: `POST /api/usps/label`
+- Route: `POST /api/usps/label/{orderId}/{ownerId}`
 - Request:
 ```json
 Content-Type: application/json
-
 {
-    "toAddress": {
-        "firstName": "Joe",
-        "lastName": "Doe",
-        "streetAddress": "1100 Wyoming", *required
-        "secondaryAddress": "Suite 150",
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63118", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
-    "fromAddress": {
-        "firstName": "John",
-        "lastName": "Smith",
-        "streetAddress": "4120 Bingham", *required
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63116", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
     "packageDescription": {
         "mailClass": "PRIORITY_MAIL", *required
         "rateIndicator": "SP", *required
@@ -54,7 +32,6 @@ Content-Type: application/json
 - Response:
 ```json
 Content-Type: application/json
-
 {
     "trackingNumber": "9205590109769900012613",
     "labelAddress": {
@@ -69,7 +46,7 @@ Content-Type: application/json
         "ignoreBadAddress": false
     },
     "routingInformation": "420631182628",
-    "postage": 7.64,
+    "postage": 7.64, //label payment amount
     "extraServices": [
         {
             "name": "USPS Tracking",
@@ -93,144 +70,64 @@ File Name: label.pdf
 Content-Encoding: gzip
 Content-Transfer-Encoding: encode
 
-JVBERi0xLjQKJaqrrK0KMSAwIG9iago8PAovUHJvZHVjZXIgKEFwYWNoZSBGT1AgVmVyc2lvbiBTVk4gYnJhbmNoZXMvZm9wLTJfOC9mb3AtY29yZTogUERGIFRyYW5zY29kZXIgZm9yIEJhdGlrKQovQ3JlYXRpb25EYXRlIChEOjIwMjMwNTI2MTk1MjMwWikKPj4KZW5kb2JqCjIgMCBvYmoKPDwKICAvTiAzCiAgL0xlbmd0aCAzIDAgUgogIC9GaWx0ZXIgL0ZsYXRlRGVjb2RlCj4+CnN0cmVhbQp4nO2ZZ1BUWRaA73udEw3dTZOhyUmihAYk5yRBsqhAd5NpoclBUWRwBEYQEUmKIKKAA44OQUZREcWAKCigok4jg4AyDo4iKipL44/ZrfmxtVVb+2f7/Hjvq3NPvXPuq1v1vqoHgAwxnpWQDOsDkMBN4fk62zGCgkMYmAcAC0iACCgAHc5KTrT19vYAqyGoBX+L92MAEtzv6wjWc8+Roos+6Bgem3F5/Haiecvf6/8liOwELhsAiLbKsWxOMmuVd61yNDuBLcjPCjg9JTEFA
+{image data}
 ```
 ### 2. Create domestic returns labels.
-- Route: `POST /api/usps/return-label`
-- Request:
-```json
-Content-Type: multipart/mixed
-
-{
-    "toAddress": {
-        "firstName": "Joe",
-        "lastName": "Doe",
-        "streetAddress": "1100 Wyoming", *required
-        "secondaryAddress": "Suite 150",
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63118", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
-    "fromAddress": {
-        "firstName": "John",
-        "lastName": "Smith",
-        "streetAddress": "4120 Bingham", *required
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63116", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
-    "returnAddress": {
-        The address where the package should be returned to if it is deemed undeliverable or returned to sender. This address will be printed in the return address block of the label.
-        "firstName": "John",
-        "lastName": "Smith",
-        "streetAddress": "4120 Bingham", *required
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63116", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
-    "packageDescription": {
-        "mailClass": "PRIORITY_MAIL", *required
-        "rateIndicator": "SP", *required
-        "weightUOM": "lb",
-        "weight": 0.5, *required
-        "dimensionsUOM": "in",
-        "length": 9, *required
-        "width": 0.25, *required
-        "height": 6, *required
-        "processingCategory": "MACHINABLE", *required
-        "mailingDate": "2023-05-26", *required
-        "extraServices": [
-            920
-        ],
-        "destinationEntryFacilityType": "NONE", *required
-    }
-}
-```
+- Route: `POST /api/usps/return-label/{orderId}/{ownerId}`
 - Response: same as previous
+
 ### 3. Cancel domestic labels.
 - Route: `DELETE /api/usps/label/{trackingNumber}`
 - Request: NONE
 - Response: 200 Successful Operation
+
+
 ### 4. Create international labels.
 - Route: `POST /api/usps/international-label`
 - Request:
 ```json
-{
 Content-Type: application/json
-
-    "toAddress": {
-        "firstName": "Joe",
-        "lastName": "Doe",
-        "streetAddress": "1100 Wyoming", *required
-        "secondaryAddress": "Suite 150",
-        "city": "St. Louis", *required
-        "country": "string", *required
-        "countryISOAlpha2Code": "string^([a-zA-Z]){2}", *required
-        "state": "MO",
-        "ZIPCode": "63118",
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true *recommended
-    },
-    "fromAddress": {
-        "firstName": "John",
-        "lastName": "Smith",
-        "streetAddress": "4120 Bingham", *required
-        "city": "St. Louis", *required
-        "state": "MO", *required
-        "ZIPCode": "63116", *required
-        "phone": "XXXXXXXXXXX",
-        "ignoreBadAddress": true
-    },
+{
     "packageDescription": {
-        "mailClass": "PRIORITY_MAIL", *required
-        "rateIndicator": "SP", *required
+        "mailClass": "PRIORITY_MAIL_EXPRESS_INTERNATIONAL", *required (has enums)
+        "rateIndicator": "SP", *required (has enums)
         "weightUOM": "lb",
         "weight": 0.5, *required
         "dimensionsUOM": "in",
         "length": 9, *required
         "width": 0.25, *required
         "height": 6, *required
-        "processingCategory": "MACHINABLE", *required
+        "processingCategory": "MACHINABLE", *required (has enums)
         "mailingDate": "2023-05-26", *required
         "extraServices": [
-            920
+            920 //service code for enabling shipment tracking
         ],
-        "destinationEntryFacilityType": "NONE", *required
+        "destinationEntryFacilityType": "NONE", *required (has enums)
     },
     "customsForm": {
-    "contentComments": "string",
-    "restrictionType": "QUARANTINE", *required
-    "restrictionComments": "string",
-    "AESITN": "string", *required AES/ITN Exemption is a code that indicates the reason why you did not need to file electronic export information.
-    "invoiceNumber": "string", *required
-    "licenseNumber": "string", *required
-    "certificateNumber": "string", *required
-    "customsContentType": "MERCHANDISE", *required
-    "contents": [
-            {
-            "itemDescription": "Policy guidelines document", *required
-            "itemQuantity": 1, *required
-            "itemValue": 1, *required
-            "weightUOM": "lb",
-            "itemWeight": 1.0001, *required
-            "HSTariffNumber": "string",
-            "countryofOrigin": "string[A-Z]{2}", *required
-            "itemCategory": "string",
-            "itemSubcategory": "string"
-            }
-        ]
+        "customsContentType": "MERCHANDISE", *required (has enums)
+        "restrictionType": "QUARANTINE", *required
+        "invoiceNumber": "389403", *required
+        "licenseNumber": "string", *required
+        "certificateNumber": "CER3629004", *required
+        "AESITN": "4783947658", *required AES/ITN Exemption is a code that indicates the reason why you did not need to file electronic export information.
+        "restrictionComments": "Covid",
+        "contents": [
+                {
+                "itemDescription": "Lenovo Laptop", *required
+                "itemQuantity": 1, *required
+                "itemValue": 1, *required
+                "weightUOM": "lb",
+                "itemWeight": 1.0001, *required
+                "countryofOrigin": "string[A-Z]{2}", *required
+                }
+            ]
     }
+}
 ```
 - Response:
 ```json
 Content-Type: multipart/mixed
-
 {
 
     "labelMetadata": {
@@ -296,7 +193,6 @@ The following route should be used to charge sellers who bought shipping labels 
 ```json
 {
     "amount": "XXXXX",
-    "cardid": "XXXXXXXXXX"
 }
 ```
 - Response:
@@ -309,6 +205,7 @@ The following route should be used to charge sellers who bought shipping labels 
 ```
 ## Added payment refund capability
 - Route: `POST /api/stripe/refund`
+include amount incase of partial refund, dont include amount incase of full refund
 - Request:
 ```json
 {
