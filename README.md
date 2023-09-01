@@ -17,15 +17,14 @@ PUT api/orders/orders/{orderId}
 Content-Type: application/json
 {
   shippingDetails: {
-      packageDescription: {
-        weight: "number", //weight in pounds
-        length: "number", //length in inches
-        width: "number", //width in inches
-        height: "number", //height in inches
-        domesticMailClass: "string", // options: ["PRIORITY_MAIL", "PRIORITY_MAIL_EXPRESS", "PARCEL_SELECT", "PARCEL_SELECT_LIGHTWEIGHT"]
-        internationalMailClass: "string", // options: ["FIRST-CLASS_PACKAGE_INTERNATIONAL_SERVICE", "PRIORITY_MAIL_INTERNATIONAL", "PRIORITY_MAIL_EXPRESS_INTERNATIONAL", "GLOBAL_EXPRESS_GUARANTEED"]
-        processingCategory: "string", //options: ["FLATS", "MACHINABLE", "NON_MACHINABLE"],
-        rateIndicator: "string", //rateIndicator options: [DR - SP] (DR - Dimensional, Rectangular SP - Single Piece)
+    packageDescription: {
+      weight: "number", //weight in pounds
+      length: "number", //length in inches
+      width: "number", //width in inches
+      height: "number", //height in inches
+      mailClass: "string", // options: ["PRIORITY_MAIL", "PRIORITY_MAIL_EXPRESS", "PARCEL_SELECT", "PARCEL_SELECT_LIGHTWEIGHT"]
+      processingCategory: "string", //options: ["FLATS", "MACHINABLE", "NON_MACHINABLE"],
+      rateIndicator: "string", //rateIndicator options: [SP - DR] (DR - Dimensional, Rectangular SP - Single Piece)
     }
   }
 }
@@ -37,15 +36,32 @@ PUT api/orders/orders/{orderId}
 Content-Type: application/json
 {
   shippingDetails: {
-      packageDescription: {
-        weight: "number", //weight in pounds
-        length: "number", //length in inches
-        width: "number", //width in inches
-        height: "number", //height in inches
-        domesticMailClass: "string", // options: ["PRIORITY_MAIL", "PRIORITY_MAIL_EXPRESS", "PARCEL_SELECT", "PARCEL_SELECT_LIGHTWEIGHT"]
-        internationalMailClass: "string", // options: ["FIRST-CLASS_PACKAGE_INTERNATIONAL_SERVICE", "PRIORITY_MAIL_INTERNATIONAL", "PRIORITY_MAIL_EXPRESS_INTERNATIONAL", "GLOBAL_EXPRESS_GUARANTEED"]
-        processingCategory: "string", //options: ["FLATS", "MACHINABLE", "NON_MACHINABLE"],
-        rateIndicator: "string", //rateIndicator options: [DR - SP] (DR - Dimensional, Rectangular SP - Single Piece)
+    packageDescription: {
+      weight: "number", //weight in pounds
+      length: "number", //length in inches
+      width: "number", //width in inches
+      height: "number", //height in inches
+      mailClass: "string", //options: ["FIRST-CLASS_PACKAGE_INTERNATIONAL_SERVICE", "PRIORITY_MAIL_INTERNATIONAL", "PRIORITY_MAIL_EXPRESS_INTERNATIONAL", "GLOBAL_EXPRESS_GUARANTEED"]
+      processingCategory: "string", //options: ["FLATS", "MACHINABLE", "NON_MACHINABLE"],
+      rateIndicator: "string", //rateIndicator options: [SP - DR] (DR - Dimensional, Rectangular SP - Single Piece)
+    },
+    customsForm: {
+      restrictionType: "string", //options ["QUARANTINE", "SANITARY_INSPECTION", "PHYTOSANITARY_INSPECTION", "OTHER"]
+      AESITN: "string", //AES/ITN Exemption is a code that indicates the reason why you did not need to file electronic export information.
+      invoiceNumber: "string", //Invoice Number
+      licenseNumber: "string", //License Number
+      certificateNumber: "string", //Certificate Number
+      customsContentType: "string", // options ["MERCHANDISE", "GIFT", "DOCUMENT", "COMMERCIAL_SAMPLE", "RETURNED_GOODS", "OTHER", "HUMANITARIAN_DONATIONS", "DANGEROUS_GOODS", "CREMATED_REMAINS", "NON_NEGOTIABLE_DOCUMENT", "MEDICAL_SUPPLIES", "PHARMACEUTICALS"],
+      contents: 
+        [
+          {
+            itemDescription: "string", //Description of the item.
+            itemQuantity: "number", //Quantity of the item. Integer value required.
+            itemValue: "number", //Value/Price of Item
+            itemWeight: "number", //weight in pounds
+            countryofOrigin: "string", //2 digit Alpha Country Code defined by ISO is required for international address
+          }
+        ]
     }
   }
 }
@@ -68,8 +84,7 @@ POST api/usps/domestic-label/price
 
 Content-Type: application/json
 {
-  shippingAddressId: "XXXXXXXXXX",
-  productId: "XXXXXXXXXX"
+  orderId: "XXXXXXXXXX",
 }
 ```
 - **Response**:
@@ -88,8 +103,7 @@ POST api/usps/international-label/price
 
 Content-Type: application/json
 {
-  shippingAddressId: "XXXXXXXXXX",
-  productId: "XXXXXXXXXX"
+  orderId: "XXXXXXXXXX",
 }
 
 ```
@@ -173,14 +187,14 @@ Content-Type: application/json
 
 - **Request**:
 ```javascript
-DELETE api/usps/domestic-label/{trackingNumber}
+DELETE api/usps/domestic-label/{orderId}
 ```
 - **Response**: operation successful
 
 ### Track both Domestic and International label
 - **Request**:
 ```javascript
-GET api/usps/tracking/{trackingNumber}
+GET api/usps/tracking/{orderId}
 ```
 - **Response**:
 ```javascript
