@@ -1,4 +1,4 @@
-## Seller Orders Menu: Shipping Page 
+## Seller Orders => Shipping Page 
 When the order's status is paid, the seller have two options(buttons): **Ship** and **Refund**.
 
 **Ship** option should take the seller to a shipping page where seller can either 
@@ -73,60 +73,47 @@ Content-Type: application/json
 
 ---
 
-## Yallalive Shipping Labels API
+# Yallalive Shipping Labels API
+
+## Shipping Label Price
 
 ### Calculate Domestic Label Price:
 Use the following route to calculate the shipping label price for an order, It should return an estimated price amount to be displayed to the buyer in the shipping page before confirming the checkout.
-
 - **Request**:
 ```javascript
-POST api/usps/domestic-label/price
-
-Content-Type: application/json
-{
-  orderId: "XXXXXXXXXX",
-}
+POST api/usps/domestic-label/price/{orderId}
 ```
 - **Response**:
 ```javascript
 Content-Type: application/json
 {
     "totalPrice": 11.06
+    ...
 }
 ```
 
 ### Calculate International Label Price:
-
 - **Request**:
 ```javascript
-POST api/usps/international-label/price
-
-Content-Type: application/json
-{
-  orderId: "XXXXXXXXXX",
-}
-
+POST api/usps/international-label/price/{orderId}
 ```
 - **Response**:
 ```javascript
 Content-Type: application/json
 {
     "totalPrice": 14.96
+    ...
 }
 ```
 
 ---
 
-### Create Domestic Label:
+## Shipping Label Creation
 
+### Create Domestic Label:
 - **Request**:
 ```javascript
-POST api/usps/domestic-label
-
-Content-Type: application/json
-{
-  orderId: "XXXXXXXXXX",
-}
+POST api/usps/domestic-label/{orderId}
 ```
 - **Response**:
 ```javascript
@@ -171,25 +158,46 @@ Content-Transfer-Encoding: encode
 ```
 
 ### Create Returns Domestic Label:
-
 - **Request**:
 ```javascript
-POST api/usps/return-label
-
-Content-Type: application/json
-{
-  orderId: "XXXXXXXXXX",
-}
+POST api/usps/return-label/{orderId}
 ```
 - **Response**: same as previous.
 
-### Cancel Domestic Label:
+### Create International Label:
+- **Request**:
+```javascript
+POST api/usps/international-label/{orderId}
+```
+- **Response**: same as previous.
 
+---
+
+## Shipping Label Cancellation
+
+### Cancel Domestic Label:
 - **Request**:
 ```javascript
 DELETE api/usps/domestic-label/{orderId}
 ```
-- **Response**: operation successful
+- **Response**:
+```code
+200 Successful Operation
+```
+
+### Cancel International Label:
+- **Request**:
+```javascript
+DELETE api/usps/international-label/{orderId}
+```
+- **Response**:
+```code
+200 Successful Operation
+```
+
+---
+
+## Track Shipping Label Tracking
 
 ### Track both Domestic and International label
 - **Request**:
@@ -208,3 +216,26 @@ GET api/usps/tracking/{orderId}
     }
 }
 ```
+
+---
+
+# Order Payment Refund API
+## Partial Refund:
+- **Request**:
+```javascript
+POST /api/stripe/refund/{orderId}
+
+Content-Type: application/json
+{
+    "amount": "XXXXX",
+}
+```
+- **Response**
+
+## Full Refund:
+- **Request**:
+```javascript
+POST /api/stripe/refund/{orderId}
+```
+- **Response**
+
